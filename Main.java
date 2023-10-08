@@ -85,9 +85,6 @@ class Cpu {
     private int PI =0;
     private int TI =0;
 
-    
-
-    // Constructor
     public Cpu() {
         // Instruction register
         Arrays.fill(IR, '0');
@@ -379,8 +376,6 @@ class OperatingSystem extends Helper {
                         }
                     }
                     M.setMemory(memory);
-                    //printMemory();
-
                     continue;
 
 
@@ -392,7 +387,6 @@ class OperatingSystem extends Helper {
                     continue;
                 } else if (buffer[0] == '$' && buffer[1] == 'E' && buffer[2] == 'N' && buffer[3] == 'D') {
                     System.out.println("End card detected\n");
-                   // printMemory();
                 
                     continue;
                 } else {
@@ -402,23 +396,6 @@ class OperatingSystem extends Helper {
                     loadProgram(memory, buffer);
                 }
 
-                
-               
-                
-                // for (int i = 0; i < line.length();) {
-                //     memory[used_memory][i % 4] = buffer[i];
-                //     if(buffer[i] == 'H' || buffer[i] == '\0')
-                //         used_memory += 10 - (used_memory%10);
-                    
-                //     i++;
-                //     if (i % 4 == 0) {
-                //         used_memory++;
-                //     }
-
-                // }
-                // if(used_memory%10==9)
-                //     used_memory += 10 - (used_memory%10);
-                // printMemory();
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -450,33 +427,19 @@ class OperatingSystem extends Helper {
         //storing the frame number into the page table register
         memory[used_memory][2] = (char)(frameNumber/10 + '0');
         memory[used_memory][3] = (char)(frameNumber%10 + '0');
-        //printMemory();
 
         //storing the data into the frame
         int framePtr = frameNumber*10;
         System.out.println("The frame pointer is :: "+ framePtr);
-    //    for (int i = 0; i < buffer.length;) {
-    //                 memory[framePtr][i % 4] = buffer[i];
-    //                 if(buffer[i] == 'H' || buffer[i] == '\0')
-    //                     framePtr += 10 - (framePtr%10);
-                    
-    //                 i++;
-    //                 if (i % 4 == 0) {
-    //                     framePtr++;
-    //                 }
-
-    //             }
-    int k = 0;
-    for(int i=framePtr; i<(framePtr+10) && k<buffer.length; i++) {
-        for(int j=0; j<4 && k<buffer.length; j++) {
-                memory[i][j] = buffer[k++];
+        int k = 0;
+        for(int i=framePtr; i<(framePtr+10) && k<buffer.length; i++) {
+            for(int j=0; j<4 && k<buffer.length; j++) {
+                    memory[i][j] = buffer[k++];
+            }
         }
-    }
 
         //printing the memory
         System.out.println("The memory after loading the program card is : \n");
-       // printMemory();
-
         M.setMemory(memory);
         used_memory++;
         System.out.println("The  used memory Now is : "+used_memory+"\n");
@@ -581,14 +544,8 @@ class OperatingSystem extends Helper {
                 flag = true;
                 return;
             }
-                
-            //for looking what is the register value
-            // System.out.println("The General Register is : ");
-            // for(int i=0;i<4;i++)
-            //     System.out.print(cpu.getR()[i]);
-            M.setMemory(memory);
 
-            //Calling the Simulation method to handle the TTL and TLL
+            M.setMemory(memory);
             SIMULATION();
            
             
@@ -683,21 +640,11 @@ class OperatingSystem extends Helper {
     private void SIMULATION() {
 
         totalTimeCounter++;
-        //totalLineCounter++;
         if(totalTimeCounter == ttl){
             cpu.setTI(2);
             System.out.println("Time Limit Exceeded");
             
         }
-
-        // if(cpu.getSI()!=0 || cpu.getTI()!=0 || cpu.getPI()!=0)
-		// 	MOS();
-        //     return;
-        // if(totalLineCounter > tll){
-        //     cpu.setTI(1);
-        //     System.out.println("Line Limit Exceeded");
-        //     System.exit(0);
-        // }
     }
 
     private int addressMap(int va) {
