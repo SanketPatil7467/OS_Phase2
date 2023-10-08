@@ -715,8 +715,6 @@ class OperatingSystem extends Helper {
             cpu.setTI(2);
             TERMINATE(2);
             return;
-            //System.out.println("Line Limit Exceeded");
-            //System.exit(0);
         }
 
         //take the data from the memory and put it into the output file
@@ -799,14 +797,12 @@ class OperatingSystem extends Helper {
                 }
             M.setMemory(memory);
         } catch (Exception e) {
-            // TODO: handle exception
             e.printStackTrace();
         }
         cpu.setSI(0);
 
     }
 
-////---------For MOS---------////
     private void MOS() {
         System.out.println("The Switch value is : for TI SI" + cpu.getTI() + cpu.getSI() + "For TI PI " + cpu.getTI() + cpu.getPI());
         switch(""+cpu.getTI()+cpu.getSI()) {
@@ -972,34 +968,6 @@ class OperatingSystem extends Helper {
 
     }
 
-    ////---------For Printing the MEMORY---------////
-    public void printMemory() {
-        char m[][] = M.getMemory();
-        System.out.println("Printing the memory...\n");
-        // print memory in form of boxes
-        for (int i = 0; i < m.length; i++) {
-            //for showing the numbers at side as reference
-            if (i < 10) {
-                System.out.print(i + "  ");
-            }else{
-                System.out.print(i + " ");
-            }
-
-            for (int j = 0; j < 4; j++) {
-                if (m[i][j] == 0) {
-                    System.out.print(" - ");
-                } else {
-                    System.out.print(" " + m[i][j] + " ");
-                }
-                if (j == 3) {
-                    System.out.println();
-                } else {
-                    System.out.print("|");
-                }
-            }
-            System.out.println();
-        }
-    }
 }
 
 
