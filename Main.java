@@ -29,8 +29,9 @@ class PCB{
 
     //Creating getters and setters for the PCB class
 
-    public char[] getJobID() {
-        return jobID;
+    public String getJobID() {
+        String jobstr = new String(jobID);
+        return jobstr;
     }
 
     public void setJobID(char[] jobID) {
@@ -904,85 +905,67 @@ class OperatingSystem extends Helper {
 				TERMINATE(3);
 				return;
         }
-cpu.setSI(0);
-cpu.setPI(0);
+        cpu.setSI(0);
+        cpu.setPI(0);
 
     }
 
-      private void TERMINATE(int em) {
+      private void TERMINATE(int code) {
         System.out.println("Terminate called");
         
         try {
-                    String line = getEM(em);
+                    String line = getErrorMessage(code);
                     
                     System.out.println("The value of EM is : "+line+"\n");
-                    
+                    outputReader.write(String.format("JOB ID   :  %s\n",pcb.getJobID()));
                     outputReader.write(line);
-                    outputReader.write("\n============================\n");
-                    outputReader.write("IC: "+cpu.getIC()+"\n");
-                    outputReader.write("IR: "+ String.valueOf(cpu.getIR())+"\n");
-                    outputReader.write("================================\n");
-                    outputReader.write("SI: "+cpu.getSI()+"\n");
-                    outputReader.write("PI: "+cpu.getPI()+"\n");
-                    outputReader.write("TI: "+cpu.getTI()+"\n");
-                    outputReader.write("================================\n");
-                    outputReader.write("TTL: "+ttl+"\n");
-                    outputReader.write("TLL: "+tll+"\n");
-                    outputReader.write("================================\n");
-                    outputReader.write("TTC: "+totalTimeCounter+"\n");
-                    outputReader.write("TLC: "+totalLineCounter+"\n");
-                    outputReader.write("================================\n");
+                    outputReader.write("\n");
+                    outputReader.write("IC       :  "+cpu.getIC()+"\n");
+                    outputReader.write("IR       :  "+ String.valueOf(cpu.getIR())+"\n");
+                    outputReader.write("TTC      :  "+totalTimeCounter+"\n");
+                    outputReader.write("TLC      :  "+totalLineCounter+"\n");
                     outputReader.write("\n\n");
                     cpu.setSI(0);
                     cpu.setTI(0);
-                    cpu.setPI(0);
-
-                    // FileReader fr = new FileReader("output.txt");
-                    // BufferedReader br = new BufferedReader(fr);
-                    // String s;
-                    // while((s = br.readLine()) != null) {
-                    //     System.out.println(s);
-                    // }
-                    
+                    cpu.setPI(0);                    
 
         } catch (IOException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
         }
 
     }
 
-    private String getEM(int em) {
-        switch(em) {
+    private String getErrorMessage(int code) {
+        switch(code) {
             case 0: {
-                return "No error";
+                return " No error";
             }
             case 1: {
-                return "Out of Data";
+                return " Out of Data";
             }
             case 2: {
-                return "Line Limit Exceeded";
+                return " Line Limit Exceeded";
             }
             case 3: {
-                return "Time Limit Exceeded";
+                return " Time Limit Exceeded";
             }
             case 4: {
-                return "Operation Code Error";
+                return " Operation Code Error";
             }
             case 5: {
-                return "Operand Error";
+                return " Operand Error";
             }
             case 6: {
-                return "Invalid Page Fault";
+                return " Invalid Page Fault";
             }
             case 7: {
-                return "Time Limit Exceeded with Opcode Error";
+                return " Time Limit Exceeded with Opcode Error";
             }
             case 8: {
-                return "Time Limit Exceeded with Operand Error";
+                return " Time Limit Exceeded with Operand Error";
             }
             default: {
-                return "Invalid Error";
+                return " Invalid Error";
             }
 
         }
