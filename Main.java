@@ -306,7 +306,6 @@ class OperatingSystem {
                 
                     continue;
                 } else {
-                     System.out.println("Loading the instructions to memory");
                     char memory[][] = getMemory();
 
                     loadProgram(memory, buffer);
@@ -373,7 +372,6 @@ class OperatingSystem {
 
             //checking if the operand is number or not
             if(getIR(0) != 'H' && (!Character.isDigit(getIR()[2]) || !Character.isDigit(getIR()[3]))){
-                System.out.println("Invalid operand");
                 setPI(2);
                 MOS();
                 break;
@@ -394,7 +392,7 @@ class OperatingSystem {
                 setPI(0);
             }
 
-            String opcode = getOpcode();
+            // String opcode = getOpcode();
 
             setMemory(memory);
             
@@ -443,11 +441,7 @@ class OperatingSystem {
                 }
                 break;
                 case "SR": {
-                    System.out.println("The operand is : "+getOperand()+"\n");
                     char[] arr = getR();
-                    for(char c: arr) {
-                        System.out.println(c);
-                    }
                     memory[realAddress][0] = arr[0];
                     memory[realAddress][1] = arr[1];
                     memory[realAddress][2] = arr[2];
@@ -473,7 +467,6 @@ class OperatingSystem {
                 }
                 break;
                 case "GD": {
-                   System.out.println("\n Inside GD Instructions \n");
                     setSI(1);
                     setMemory(memory);
                     MOS();
@@ -498,7 +491,6 @@ class OperatingSystem {
                 
 
                 default: {
-                    System.out.println("Invalid opcode");
                     setPI(1);
                     
                 }
@@ -525,13 +517,10 @@ class OperatingSystem {
 
             return realAddress;
 
-
         } else {
             setPI(3);
             return -1;
         }
-
-        
 
     }
 
@@ -548,7 +537,6 @@ class OperatingSystem {
         while(true){
             if(generated[value] == 0){
                 generated[value] = 1;
-                System.out.println("The value is : "+value+"\n");
                 break;
             }
             else{
@@ -567,7 +555,6 @@ class OperatingSystem {
         LLC++;
         //checking if the line counter is greater than the tll
         if(LLC > tll){
-            System.out.println("The TTL exceeded so calling terminate");
             isExceeded = true;
             setTI(2);
             TERMINATE(2);
@@ -590,8 +577,6 @@ class OperatingSystem {
         for(int i=realAddress; i<realAddress+10; i++){
             for(int j=0; j<4; j++){
                 if(memory[i][j] != '\0'){
-                System.out.println("The line is : "+memory[i][j] +"\n");
-                    // line.append(memory[i][j]);
                     try {
                         outputReader.write(memory[i][j]);
                     } catch (Exception e) {
@@ -602,10 +587,7 @@ class OperatingSystem {
             }
         }
 
-        System.out.println("The realAddress NOW in write fun() is : "+realAddress+"\n");
-
         try {
-            //outputReader.write(line.toString());
             outputReader.newLine();
             outputReader.flush();
         } catch (IOException e) {
@@ -620,17 +602,15 @@ class OperatingSystem {
         flag = true;
          String line = "";
         try {
-             line = inputReader.readLine();
-             System.out.println("The Line in read is::" + line);
+            line = inputReader.readLine(); 
             if(line == null) {
-                System.out.println("Input file is empty");
+                // "Input file is empty"
                 
             }else if(line.startsWith("$END")){
-                System.out.println("Out of data");
+                // "Out of data"
                 flag = false;
                 TERMINATE(1);
                 return;
-                //System.out.println("Out of Data Card");
             }
             char[] buffer = line.toCharArray();
             char[][] memory = getMemory();
@@ -661,23 +641,27 @@ class OperatingSystem {
     }
 
     private void MOS() {
-        System.out.println("The Switch value is : for TI SI" + getTI() + getSI() + "For TI PI " + getTI() + getPI());
         switch(""+getTI()+getSI()) {
             case "01": {
                 READ();
             }
             break;
+
             case "02": {
                 WRITE();
                  
             }break;
+
             case "03": {
                 setSI(0);
                 TERMINATE(0);
             }
             break;
-            case "21":TERMINATE(1);
-			break;
+
+            case "21":{
+                TERMINATE(1);
+            }
+            break;
 
 			case "22": {
                 isExceeded= true;
@@ -719,24 +703,13 @@ class OperatingSystem {
 
                     }
                     if(valid==1){
-
-                        System.out.println("The page fault was valid so: ");
-                        //Valid Page Fault
-                        //allocate2(br.readLine());
-                            valid =0;
+                        valid =0;
                         int al = allocate();
                         char [][] memory = getMemory();
-                        //storing the frame in the page table 
-                        System.out.println("The value of AL is : "+al+"\n");
-                        System.out.println("The location in PTR store GD is : "+pageTableRegister+getIR(2)+"\n");
                         int ir = getIR(2) - '0';
-                        //System.out.print("The value of IR is : "+ir+"\n");
                         memory[pageTableRegister+ir][2] = (char)(al/10 + '0');
                         memory[pageTableRegister+ir][3] = (char)(al%10 + '0');
                         setMemory(memory);
-                        //printMemory();
-                        //setIC(getIC()+1);
-                        System.out.println("NOW IC:"+getIC());
                         setPI(0);
                     }else{
                         flag = false;
@@ -764,12 +737,9 @@ class OperatingSystem {
     }
 
       private void TERMINATE(int code) {
-        System.out.println("Terminate called");
         
         try {
                     String line = getErrorMessage(code);
-                    
-                    System.out.println("The value of EM is : "+line+"\n");
                     outputReader.write(String.format("JOB ID   :  %s\n",pcb.getJobID()));
                     outputReader.write(line);
                     outputReader.write("\n");
@@ -831,7 +801,6 @@ class OperatingSystem {
 public class Main {
     public static void main(String[] args) {
         OperatingSystem os = new OperatingSystem("input_phase2.txt", "output.txt");
-        System.out.println("\nOS initialized");
         os.init();
         os.LOAD();
     }
