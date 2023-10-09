@@ -235,7 +235,7 @@ class OperatingSystem extends Helper {
     private int pageTableRegister;
     // generated array to store random numbers;
     public int generated[] = new int[30];
-           
+
 
     //PCB
     private PCB pcb;
@@ -303,9 +303,6 @@ class OperatingSystem extends Helper {
                     pcb.setTTL(new char[] {buffer[8],buffer[9],buffer[10],buffer[11]});
                     pcb.setTLL(new char[] {buffer[12],buffer[13],buffer[14],buffer[15]});
 
-                    //Printing the PCB
-                    System.out.println("\n The PCB is : \n"+pcb.toString()+"\n");
-
                     //Converting the TTL and TLL to int
                     ttl = Integer.parseInt(String.valueOf(pcb.getTTL()));
                     tll = Integer.parseInt(String.valueOf(pcb.getTLL()));
@@ -323,7 +320,6 @@ class OperatingSystem extends Helper {
                     char[][] memory = M.getMemory();
 
                     for(int i=pageTableRegister; i<(pageTableRegister+10); i++){
-                        System.out.println("The value of i is : "+i+"\n");
                         for(int j=0; j<4; j++){
                             memory[i][j] = '*';
                         }
@@ -333,12 +329,10 @@ class OperatingSystem extends Helper {
 
 
                 } else if (buffer[0] == '$' && buffer[1] == 'D' && buffer[2] == 'T' && buffer[3] == 'A') {
-                    System.out.println("Data card detected");
                     STARTEXECUTION();
                     continue;
 
                 } else if (buffer[0] == '$' && buffer[1] == 'E' && buffer[2] == 'N' && buffer[3] == 'D') {
-                    System.out.println("End card detected\n");
                 
                     continue;
                 } else {
@@ -413,13 +407,10 @@ class OperatingSystem extends Helper {
                 cpu.setPI(2);
                 MOS();
                 break;
-                //System.exit(0);
             }
             if(cpu.getIR(0) != 'H'){
                 realAddress = addressMap(cpu.getOperand());
             }
-            // else if(cpu.getIR(0) != 'B' && cpu.getIR(1) != 'T')
-            //     realAddress = addressMap(cpu.getOperand());
 
             //if realAdrees is -1 then there is pagefault
             if(cpu.getPI() != 0 || (cpu.getTI() != 0 && cpu.getPI() != 0)){
@@ -430,9 +421,7 @@ class OperatingSystem extends Helper {
                     return;
                 }
                 realAddress = addressMap(cpu.getOperand());
-                System.out.println("The real address Now has become is : "+realAddress+"\n");
                 cpu.setPI(0);
-               // System.exit(0);
             }
 
             String opcode = cpu.getOpcode();
@@ -469,7 +458,6 @@ class OperatingSystem extends Helper {
 
     private void examine() {
         String opcode = cpu.getOpcode();
-        System.out.println("The opcode is : "+opcode+"\n");
         char[][] memory = M.getMemory();
             switch(opcode) {
                 case "LR": {
