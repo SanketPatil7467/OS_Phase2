@@ -69,17 +69,11 @@ class PCB{
 }
 
 class Cpu {
-    // Instruction register
-    private char[] IR = new char[4];
-
-    // toggle
-    private boolean C = false;
-
-    // Instruction counter
-    private int IC = 0;
-
-    // General purpose Register
-    private char[] R = new char[4];
+    
+    private char[] IR = new char[4]; // Instruction register
+    private boolean C = false; // toggle
+    private int IC = 0; // Instruction counter
+    private char[] R = new char[4]; // General purpose Register
 
     //Interrupt
     private int SI =0;
@@ -87,91 +81,68 @@ class Cpu {
     private int TI =0;
 
     public Cpu() {
-        // Instruction register
-        Arrays.fill(IR, '0');
-
-        // toggle
-        this.C = false;
-
-        // Instruction counter
-        IC = 0;
-
-        // General purpose register
-        Arrays.fill(R, '0');
+        Arrays.fill(IR, '0'); // Initializing Instruction Register
+        this.C = false; // Initializing toggle
+        IC = 0; // Initializing Instruction Counter
+        Arrays.fill(R, '0'); // Initializing General Purpose Register
     }
-
-    // getter for the instruction register
-    //this will return the whole array
+    
     public char[] getIR() {
         return this.IR;
     }
 
-    //also create a getIR method which will accept a parameter of type int
-    //and return the value of the IR at that index
     public int getIR(int index) {
         return this.IR[index];
     }
 
-    // setter for the instruction register
     public void setIR(char[] IR) {
         this.IR = IR;
     }
 
-    // getter for the toggle
     public boolean getC() {
         return this.C;
     }
 
-    // setter for the toggle
     public void setC(boolean C) {
         this.C = C;
     }
 
-    // getter for the instruction counter
     public int getIC() {
         return this.IC;
     }
 
-    // setter for the instruction counter
     public void setIC(int IC) {
         this.IC = IC;
     }
 
-    // getter for the general purpose register
     public char[] getR() {
         return this.R;
     }
 
-    // setter for the general purpose register
     public void setR(char[] R) {
         this.R = R;
     }
 
-    //getter for the PI
     public int getPI() {
         return PI;
     }
 
-    //setter for the PI
     public void setPI(int PI) {
         this.PI = PI;
     }
 
-    //getter for the TI
     public int getTI() {
         return TI;
     }
 
-    //setter for the TI
     public void setTI(int TI) {
         this.TI = TI;
     }
 
-    // getter for the interrupt
     public int getSI() {
         return SI;
     }
-    //setter for the interrupt
+
     public void setSI(int sI) {
         SI = sI;
     }
@@ -201,21 +172,15 @@ class Cpu {
 
 
 class MainMemory {
-    // Main memory
     private char[][] M = new char[300][4];
-
-    // Constructor
     public MainMemory() {
-        // this is the main memory
         this.M = new char[300][4];
     }
 
-    // getter for the main memory
     public char[][] getMemory() {
         return this.M;
     }
 
-    // setter for the main memory
     public void setMemory(char[][] M) {
         this.M = M;
     }
@@ -227,7 +192,6 @@ class Helper{
         
         //generating a random value from 0-29
         int value = (int)(Math.random() * 30);
-        System.out.println("The value is : "+value+"\n");
 
         //check wheather it is generated if it is then again generate new value
         while(true){
@@ -261,26 +225,26 @@ class OperatingSystem extends Helper {
     private BufferedReader inputReader;
     private BufferedWriter outputReader;
 
-    // The buffer to store the data
+    // The buffer to store the data.
     private char[] buffer = new char[40];
 
-    // used_memory to store the used memory
+    // Store count of used memory.
     private int used_memory = 0;
 
-    //Page Table Register
+    // Page Table Register
     private int pageTableRegister;
-            //generated random numbers
-            public int generated[] = new int[30];
+    // generated array to store random numbers;
+    public int generated[] = new int[30];
            
 
     //PCB
     private PCB pcb;
-            //counters
-            private int totalTimeCounter = 0;
-            private int totalLineCounter = 0;
-            //Temporary variables to get the values in int format
-            private int ttl;
-            private int tll;
+    //counters
+    private int TTC = 0;
+    private int LLC = 0;
+    //Temporary variables to get the values in int format
+    private int ttl;
+    private int tll;
     
     private int valid=0;
 
@@ -302,11 +266,8 @@ class OperatingSystem extends Helper {
 
     // init Method to initialize everything to zero
     public void init() {
-         Arrays.fill(this.generated, 0);
+        Arrays.fill(this.generated, 0);
         // Inititalizing the main memory
-        System.out.println("Initializing the main memory\n");
-
-
         used_memory =0;
         // Initializing the main memory
         this.M = new MainMemory();
@@ -327,25 +288,20 @@ class OperatingSystem extends Helper {
 
         try {
             while ((line = inputReader.readLine()) != null) {
-                buffer = line.toCharArray();
-                System.out.println("The buffer is : "+String.valueOf(buffer)+"\n");
+                buffer = line.toCharArray(); // Loading buffer
 
                 if (buffer[0] == '$' && buffer[1] == 'A' && buffer[2] == 'M' && buffer[3] == 'J') {
-                    System.out.println("Program card detected " + buffer[4] + buffer[5] + buffer[6] + buffer[7]);
-
-                    
+                    System.out.println("Program card detected with JobID : " + buffer[4] + buffer[5] + buffer[6] + buffer[7]);
                     init();
 
-                    // Initializing the TotalTimeCounter and TotalLineCounter
-                    totalTimeCounter = 0;
-                    totalLineCounter = 0;
+                    // Initializing the TTC and LLC
+                    TTC = 0;
+                    LLC = 0;
 
                     //Initializing the PCB
-                    pcb.setJobID(new char[] {buffer[4],buffer[5],buffer[6],buffer[7]}); //jobID
-
-                    pcb.setTTL(new char[] {buffer[8],buffer[9],buffer[10],buffer[11]}); //Total Time Limit
-
-                    pcb.setTLL(new char[] {buffer[12],buffer[13],buffer[14],buffer[15]}); //Total Line Limit
+                    pcb.setJobID(new char[] {buffer[4],buffer[5],buffer[6],buffer[7]});
+                    pcb.setTTL(new char[] {buffer[8],buffer[9],buffer[10],buffer[11]});
+                    pcb.setTLL(new char[] {buffer[12],buffer[13],buffer[14],buffer[15]});
 
                     //Printing the PCB
                     System.out.println("\n The PCB is : \n"+pcb.toString()+"\n");
@@ -353,8 +309,6 @@ class OperatingSystem extends Helper {
                     //Converting the TTL and TLL to int
                     ttl = Integer.parseInt(String.valueOf(pcb.getTTL()));
                     tll = Integer.parseInt(String.valueOf(pcb.getTLL()));
-
-                    
 
 
                     //Now calling the allocate method to allocate the memory
@@ -364,8 +318,6 @@ class OperatingSystem extends Helper {
                     pageTableRegister = pair.getKey() * 10; //Page table register 
                     used_memory = pageTableRegister;
                     generated = pair.getValue();
-                    //Printing the pageTableRegister
-                    System.out.println("\n The pageTableRegister is : "+this.pageTableRegister+"\n");
 
                     //Initializing the PTR block with special characters
                     char[][] memory = M.getMemory();
@@ -382,10 +334,9 @@ class OperatingSystem extends Helper {
 
                 } else if (buffer[0] == '$' && buffer[1] == 'D' && buffer[2] == 'T' && buffer[3] == 'A') {
                     System.out.println("Data card detected");
-
-                    startExecution();
-
+                    STARTEXECUTION();
                     continue;
+
                 } else if (buffer[0] == '$' && buffer[1] == 'E' && buffer[2] == 'N' && buffer[3] == 'D') {
                     System.out.println("End card detected\n");
                 
@@ -414,16 +365,9 @@ class OperatingSystem extends Helper {
 
         //getting the frame number
         int frameNumber = pair.getKey();
-        System.out.println("The page table register is : "+pageTableRegister+"\n");
-        System.out.println("the current pointer is : "+used_memory+"\n");
-        System.out.println("The frame number is : "+frameNumber*10+"\n");
 
         //getting the generated array
         generated = pair.getValue();
-        System.out.println("With the addition The Generated array is : ");
-        for(int i=0;i<30;i++)
-            System.out.print(generated[i]+" ");
-        System.out.println("\n");
 
         //storing the frame number into the page table register
         memory[used_memory][2] = (char)(frameNumber/10 + '0');
@@ -431,7 +375,6 @@ class OperatingSystem extends Helper {
 
         //storing the data into the frame
         int framePtr = frameNumber*10;
-        System.out.println("The frame pointer is :: "+ framePtr);
         int k = 0;
         for(int i=framePtr; i<(framePtr+10) && k<buffer.length; i++) {
             for(int j=0; j<4 && k<buffer.length; j++) {
@@ -440,39 +383,18 @@ class OperatingSystem extends Helper {
         }
 
         //printing the memory
-        System.out.println("The memory after loading the program card is : \n");
         M.setMemory(memory);
         used_memory++;
-        System.out.println("The  used memory Now is : "+used_memory+"\n");
-
     }
 
-    private void startExecution() {
-        System.out.println("Starting the execution \n");
-
-        //Looking at all the values again to check if everything is fine
-        System.out.println("The pageTableRegister is : "+pageTableRegister+"\n");
-        System.out.println("The used_memory is : "+used_memory+"\n");
-        //the generated array
-        System.out.println("The generated array is : ");
-        for(int i=0;i<30;i++)
-            System.out.print(generated[i]+" ");
-
-        System.out.println("\n");
-
+    private void STARTEXECUTION() {
         char memory[][] = M.getMemory();
         cpu.setIC(0);
-        executeUserProgram(memory);
+        EXECUTEUSERPROGRAM(memory);
+
     }
 
-    private void executeUserProgram(char[][] memory) {
-       
-       
-
-       System.out.println("=============");
-       System.out.println("The IC is : "+cpu.getIC()+"\n");
-       System.out.println("=============");
-
+    private void EXECUTEUSERPROGRAM(char[][] memory) {
         while(true){
             int RIC = addressMap(cpu.getIC());
             cpu.setIR(new char[] {
@@ -482,14 +404,8 @@ class OperatingSystem extends Helper {
                 memory[RIC][3]
 
             });
-            //Looking at the IR
-            System.out.println("The IR is : "+String.valueOf(cpu.getIR())+"\n");
 
-            cpu.setIC(cpu.getIC()+1); //incrementing the IC
-                System.out.println("=============");
-                System.out.println("The IC is : "+cpu.getIC()+"\n");
-                System.out.println("=============");
-            
+            cpu.setIC(cpu.getIC()+1); //incrementing the IC            
 
             //checking if the operand is number or not
             if(cpu.getIR(0) != 'H' && (!Character.isDigit(cpu.getIR()[2]) || !Character.isDigit(cpu.getIR()[3]))){
@@ -519,10 +435,8 @@ class OperatingSystem extends Helper {
                // System.exit(0);
             }
 
-
-
             String opcode = cpu.getOpcode();
-            System.out.println("The opcode is : "+opcode+"\n");
+
             M.setMemory(memory);
             
             examine();
@@ -536,7 +450,6 @@ class OperatingSystem extends Helper {
                 return;
             }
             if(cpu.getPI()!=0 || cpu.getTI()!=0){
-                System.out.println("The PI is : "+cpu.getPI()+"\n");
                 MOS();
                 return;
             }
@@ -639,38 +552,24 @@ class OperatingSystem extends Helper {
     }
 
     private void SIMULATION() {
-
-        totalTimeCounter++;
-        if(totalTimeCounter == ttl){
+        TTC++;
+        if(TTC == ttl){
             cpu.setTI(2);
-            System.out.println("Time Limit Exceeded");
-            
         }
     }
 
     private int addressMap(int va) {
-        System.out.println("The value of va is : "+va+"\n");
         int pte = pageTableRegister+va/10;
-
-        System.out.println("==============================================================");
-        System.out.println("The page table register is : "+pageTableRegister+"\n");
-        System.out.println("The page table Entry is : "+pte+"\n");
-
-        System.out.println("....Maping the Virtual Address To Real Address");
 
         //checking wheather the page table register is empty or not
         if(M.getMemory()[pte][2] != '*') {
             int realAddress = Integer.parseInt(String.valueOf(M.getMemory()[pte][2]) + String.valueOf(M.getMemory()[pte][3])) * 10 + va%10;
 
-            System.out.println("The real address is : "+realAddress+"\n");
             return realAddress;
 
 
         } else {
             cpu.setPI(3);
-
-            System.out.println("The page table register is empty\n");
-            System.out.println("==============================================================");
             return -1;
         }
 
@@ -702,14 +601,14 @@ class OperatingSystem extends Helper {
         //returning the value and the arr
         //creating a map entry
         return value;
-     }
+    }
 
 
     private void WRITE() {
         //incrementing the line counter
-        totalLineCounter++;
+        LLC++;
         //checking if the line counter is greater than the tll
-        if(totalLineCounter > tll){
+        if(LLC > tll){
             System.out.println("The TTL exceeded so calling terminate");
             isExceeded = true;
             cpu.setTI(2);
@@ -918,8 +817,8 @@ class OperatingSystem extends Helper {
                     outputReader.write("\n");
                     outputReader.write("IC       :  "+cpu.getIC()+"\n");
                     outputReader.write("IR       :  "+ String.valueOf(cpu.getIR())+"\n");
-                    outputReader.write("TTC      :  "+totalTimeCounter+"\n");
-                    outputReader.write("TLC      :  "+totalLineCounter+"\n");
+                    outputReader.write("TTC      :  "+TTC+"\n");
+                    outputReader.write("LLC      :  "+LLC+"\n");
                     outputReader.write("\n\n");
                     cpu.setSI(0);
                     cpu.setTI(0);
