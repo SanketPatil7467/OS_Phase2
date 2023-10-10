@@ -101,15 +101,7 @@ class OperatingSystem {
     int realAddress =0;
 
     boolean flag= true;
-    private char[][] M = new char[300][4];
-
-    public char[][] getMemory() {
-        return this.M;
-    }
-
-    public void setMemory(char[][] M) {
-        this.M = M;
-    }
+    char[][] M = new char[300][4];
 
     private char[] IR = new char[4]; // Instruction register
     private boolean C = false; // toggle
@@ -192,6 +184,18 @@ class OperatingSystem {
         }
         opcode += this.IR[1];
         return opcode;
+    }
+
+    public void printMemory() {
+        for (int i = 0; i < M.length; i++) {
+            System.out.print(i + " | ");
+
+            for (int j = 0; j < M[0].length; j++) {
+                System.out.print(M[i][j] + " | ");
+            }
+            System.out.println("");
+
+        }
     }
 
     // Similarly creating the getOperand Method which will return
@@ -286,15 +290,12 @@ class OperatingSystem {
                     used_memory = pageTableRegister;
                     generated = pair.getValue();
 
-                    //Initializing the PTR block with special characters
-                    char[][] memory = getMemory();
 
                     for(int i=pageTableRegister; i<(pageTableRegister+10); i++){
                         for(int j=0; j<4; j++){
-                            memory[i][j] = '*';
+                            M[i][j] = '*';
                         }
                     }
-                    setMemory(memory);
                     continue;
 
 
@@ -306,9 +307,7 @@ class OperatingSystem {
                 
                     continue;
                 } else {
-                    char memory[][] = getMemory();
-
-                    loadProgram(memory, buffer);
+                    loadProgram(M, buffer);
                 }
 
             }
@@ -344,16 +343,12 @@ class OperatingSystem {
                     memory[i][j] = buffer[k++];
             }
         }
-
-        //printing the memory
-        setMemory(memory);
         used_memory++;
     }
 
     private void STARTEXECUTION() {
-        char memory[][] = getMemory();
         setIC(0);
-        EXECUTEUSERPROGRAM(memory);
+        EXECUTEUSERPROGRAM(M);
 
     }
 
@@ -393,8 +388,6 @@ class OperatingSystem {
             }
 
             // String opcode = getOpcode();
-
-            setMemory(memory);
             
             examine();
 
@@ -416,7 +409,6 @@ class OperatingSystem {
                 return;
             }
 
-            setMemory(memory);
             SIMULATION();
            
             
@@ -426,33 +418,32 @@ class OperatingSystem {
 
     private void examine() {
         String opcode = getOpcode();
-        char[][] memory = getMemory();
             switch(opcode) {
                 case "LR": {
                         
                         setR(
                             new char[] {
-                                memory[realAddress][0],
-                                memory[realAddress][1],
-                                memory[realAddress][2],
-                                memory[realAddress][3]
+                                M[realAddress][0],
+                                M[realAddress][1],
+                                M[realAddress][2],
+                                M[realAddress][3]
                             }
                         );
                 }
                 break;
                 case "SR": {
                     char[] arr = getR();
-                    memory[realAddress][0] = arr[0];
-                    memory[realAddress][1] = arr[1];
-                    memory[realAddress][2] = arr[2];
-                    memory[realAddress][3] = arr[3];
+                    M[realAddress][0] = arr[0];
+                    M[realAddress][1] = arr[1];
+                    M[realAddress][2] = arr[2];
+                    M[realAddress][3] = arr[3];
                 }
                 break;
                 case "CR": {
-                    if(getR()[0] == memory[realAddress][0] &&
-                        getR()[1] == memory[realAddress][1] &&
-                        getR()[2] ==  memory[realAddress][2] &&
-                        getR()[3] == memory[realAddress][3]
+                    if(getR()[0] == M[realAddress][0] &&
+                        getR()[1] == M[realAddress][1] &&
+                        getR()[2] ==  M[realAddress][2] &&
+                        getR()[3] == M[realAddress][3]
                     ) {
                         setC(true);
                     }else {
@@ -468,7 +459,6 @@ class OperatingSystem {
                 break;
                 case "GD": {
                     setSI(1);
-                    setMemory(memory);
                     MOS();
 
                 }
@@ -476,14 +466,12 @@ class OperatingSystem {
                 case "PD": {
                      
                     setSI(2);
-                    setMemory(memory);
                     MOS();
                 }
                 break;
                 case "H": {
                      
                     setSI(3);
-                    setMemory(memory);
                     MOS();
                     reachedH = true;
                     return;
@@ -495,9 +483,6 @@ class OperatingSystem {
                     
                 }
             }
-            
-
-            setMemory(memory);
 
     }
 
@@ -512,8 +497,8 @@ class OperatingSystem {
         int pte = pageTableRegister+va/10;
 
         //checking wheather the page table register is empty or not
-        if(getMemory()[pte][2] != '*') {
-            int realAddress = Integer.parseInt(String.valueOf(getMemory()[pte][2]) + String.valueOf(getMemory()[pte][3])) * 10 + va%10;
+        if(M[pte][2] != '*') {
+            int realAddress = Integer.parseInt(String.valueOf(M[pte][2]) + String.valueOf(M[pte][3])) * 10 + va%10;
 
             return realAddress;
 
@@ -561,8 +546,6 @@ class OperatingSystem {
             return;
         }
 
-        //take the data from the memory and put it into the output file
-        char[][] memory = getMemory();
         int oprand = getOperand();
 
         //--converting the las bit to 0
@@ -571,14 +554,12 @@ class OperatingSystem {
             oprand = oprand - (oprand%10);
             
         }
-        //printing the memory for refernce
-        // printMemory();
 
         for(int i=realAddress; i<realAddress+10; i++){
             for(int j=0; j<4; j++){
-                if(memory[i][j] != '\0'){
+                if(M[i][j] != '\0'){
                     try {
-                        outputReader.write(memory[i][j]);
+                        outputReader.write(M[i][j]);
                     } catch (Exception e) {
                         // TODO: handle exception
                     }
@@ -613,7 +594,6 @@ class OperatingSystem {
                 return;
             }
             char[] buffer = line.toCharArray();
-            char[][] memory = getMemory();
             int oprand = getOperand();
 
             //--converting the las bit to 0
@@ -624,7 +604,7 @@ class OperatingSystem {
             }
             //putting the whole buffer starting from the given operand address
             for (int i = 0; i < line.length();) {
-                    memory[realAddress][i % 4] = buffer[i];
+                    M[realAddress][i % 4] = buffer[i];
                     
                     i++;
                     if (i % 4 == 0) {
@@ -632,7 +612,6 @@ class OperatingSystem {
                     }
 
                 }
-            setMemory(memory);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -705,11 +684,9 @@ class OperatingSystem {
                     if(valid==1){
                         valid =0;
                         int al = allocate();
-                        char [][] memory = getMemory();
                         int ir = getIR(2) - '0';
-                        memory[pageTableRegister+ir][2] = (char)(al/10 + '0');
-                        memory[pageTableRegister+ir][3] = (char)(al%10 + '0');
-                        setMemory(memory);
+                        M[pageTableRegister+ir][2] = (char)(al/10 + '0');
+                        M[pageTableRegister+ir][3] = (char)(al%10 + '0');
                         setPI(0);
                     }else{
                         flag = false;
@@ -738,7 +715,11 @@ class OperatingSystem {
 
       private void TERMINATE(int code) {
         
+          System.out.println("###################");
+          printMemory();
+          System.out.println("####################");
         try {
+
                     String line = getErrorMessage(code);
                     outputReader.write(String.format("JOB ID   :  %s\n",pcb.getJobID()));
                     outputReader.write(line);
@@ -802,6 +783,7 @@ public class Main {
     public static void main(String[] args) {
         OperatingSystem os = new OperatingSystem("input_phase2.txt", "output.txt");
         os.init();
+        os.printMemory();
         os.LOAD();
     }
 }
