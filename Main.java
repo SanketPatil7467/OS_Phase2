@@ -377,7 +377,6 @@ class OperatingSystem {
 
             //if realAdrees is -1 then there is pagefault
             if(getPI() != 0 || (getTI() != 0 && getPI() != 0)){
-                //setPI(3);
                 MOS();
                 if(!flag){
                     flag = true;
@@ -581,7 +580,7 @@ class OperatingSystem {
 
     private void READ() {
         flag = true;
-         String line = "";
+        String line = "";
         try {
             line = inputReader.readLine(); 
             if(line == null) {
