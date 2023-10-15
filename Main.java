@@ -1,26 +1,25 @@
 import java.io.*;
 import java.util.*;
-import java.util.Arrays;
 
-class PCB{
+class PCB {
     private char jobID[] = new char[4];
     private char TTL[] = new char[4];
     private char TLL[] = new char[4];
 
-    //Constructor for the PCB class
+    // Constructor for the PCB class
     PCB() {
         Arrays.fill(jobID, '0');
         Arrays.fill(TTL, '0');
         Arrays.fill(TLL, '0');
     }
 
-    public PCB(char jobID[], char TTL[], char TLL[]){
+    public PCB(char jobID[], char TTL[], char TLL[]) {
         this.jobID = jobID;
         this.TTL = TTL;
         this.TLL = TLL;
     }
 
-    //Creating getters and setters for the PCB class
+    // Creating getters and setters for the PCB class
 
     public String getJobID() {
         String jobstr = new String(jobID);
@@ -51,6 +50,7 @@ class PCB{
 
 class MainMemory {
     private char[][] M = new char[300][4];
+
     public MainMemory() {
         this.M = new char[300][4];
     }
@@ -64,8 +64,8 @@ class MainMemory {
     }
 }
 
-
 class OperatingSystem {
+
     boolean isExceeded = false;
     boolean reachedH = false;
 
@@ -86,21 +86,20 @@ class OperatingSystem {
     // generated array to store random numbers;
     public int generated[] = new int[30];
 
-
-    //PCB
+    // PCB
     private PCB pcb;
-    //counters
+    // counters
     private int TTC = 0;
     private int LLC = 0;
-    //Temporary variables to get the values in int format
+    // Temporary variables to get the values in int format
     private int ttl;
     private int tll;
-    
-    private int valid=0;
 
-    int realAddress =0;
+    private int valid = 0;
 
-    boolean flag= true;
+    int realAddress = 0;
+
+    boolean flag = true;
     char[][] M = new char[300][4];
 
     private char[] IR = new char[4]; // Instruction register
@@ -224,13 +223,13 @@ class OperatingSystem {
         Arrays.fill(R, '0'); // Initializing General Purpose Register
         Arrays.fill(this.generated, 0);
         // Inititalizing the main memory
-        used_memory =0;
+        used_memory = 0;
 
         // Initializing the page table register
         this.pageTableRegister = 0;
         M = new char[300][4];
 
-        //Initializing the PCB
+        // Initializing the PCB
         this.pcb = new PCB();
     }
 
@@ -265,46 +264,44 @@ class OperatingSystem {
                 buffer = line.toCharArray(); // Loading buffer
 
                 if (buffer[0] == '$' && buffer[1] == 'A' && buffer[2] == 'M' && buffer[3] == 'J') {
-                    System.out.println("Program card detected with JobID : " + buffer[4] + buffer[5] + buffer[6] + buffer[7]);
+                    System.out.println(
+                            "Program card detected with JobID : " + buffer[4] + buffer[5] + buffer[6] + buffer[7]);
                     init();
 
                     // Initializing the TTC and LLC
                     TTC = 0;
                     LLC = 0;
 
-                    //Initializing the PCB
-                    pcb.setJobID(new char[] {buffer[4],buffer[5],buffer[6],buffer[7]});
-                    pcb.setTTL(new char[] {buffer[8],buffer[9],buffer[10],buffer[11]});
-                    pcb.setTLL(new char[] {buffer[12],buffer[13],buffer[14],buffer[15]});
+                    // Initializing the PCB
+                    pcb.setJobID(new char[] { buffer[4], buffer[5], buffer[6], buffer[7] });
+                    pcb.setTTL(new char[] { buffer[8], buffer[9], buffer[10], buffer[11] });
+                    pcb.setTLL(new char[] { buffer[12], buffer[13], buffer[14], buffer[15] });
 
-                    //Converting the TTL and TLL to int
+                    // Converting the TTL and TLL to int
                     ttl = Integer.parseInt(String.valueOf(pcb.getTTL()));
                     tll = Integer.parseInt(String.valueOf(pcb.getTLL()));
 
-
-                    //Now calling the allocate method to allocate the memory
-                   //Creating the pageTableRegister
-                    //assiging a random value from 0-29 to the pageTableRegister variable 
-                    Map.Entry<Integer, int[]> pair = allocate(generated); 
-                    pageTableRegister = pair.getKey() * 10; //Page table register 
+                    // Now calling the allocate method to allocate the memory
+                    // Creating the pageTableRegister
+                    // assiging a random value from 0-29 to the pageTableRegister variable
+                    Map.Entry<Integer, int[]> pair = allocate(generated);
+                    pageTableRegister = pair.getKey() * 10; // Page table register
                     used_memory = pageTableRegister;
                     generated = pair.getValue();
 
-
-                    for(int i=pageTableRegister; i<(pageTableRegister+10); i++){
-                        for(int j=0; j<4; j++){
+                    for (int i = pageTableRegister; i < (pageTableRegister + 10); i++) {
+                        for (int j = 0; j < 4; j++) {
                             M[i][j] = '*';
                         }
                     }
                     continue;
-
 
                 } else if (buffer[0] == '$' && buffer[1] == 'D' && buffer[2] == 'T' && buffer[3] == 'A') {
                     STARTEXECUTION();
                     continue;
 
                 } else if (buffer[0] == '$' && buffer[1] == 'E' && buffer[2] == 'N' && buffer[3] == 'D') {
-                
+                    System.out.println("End Of card ");
                     continue;
                 } else {
                     loadProgram(M, buffer);
@@ -316,31 +313,31 @@ class OperatingSystem {
         }
     }
 
-    //loadProgram method to load the program to the memory
+    // loadProgram method to load the program to the memory
     private void loadProgram(char[][] memory, char[] buffer) {
-        if (used_memory >= (pageTableRegister+10)) {
-                    System.out.println("Memory is full");
+        if (used_memory >= (pageTableRegister + 10)) {
+            System.out.println("Memory is full");
         }
 
-        //getting the frame number for storing the porgram card
-        Map.Entry<Integer, int[]> pair = allocate(generated); 
+        // getting the frame number for storing the porgram card
+        Map.Entry<Integer, int[]> pair = allocate(generated);
 
-        //getting the frame number
+        // getting the frame number
         int frameNumber = pair.getKey();
 
-        //getting the generated array
+        // getting the generated array
         generated = pair.getValue();
 
-        //storing the frame number into the page table register
-        memory[used_memory][2] = (char)(frameNumber/10 + '0');
-        memory[used_memory][3] = (char)(frameNumber%10 + '0');
+        // storing the frame number into the page table register
+        memory[used_memory][2] = (char) (frameNumber / 10 + '0');
+        memory[used_memory][3] = (char) (frameNumber % 10 + '0');
 
-        //storing the data into the frame
-        int framePtr = frameNumber*10;
+        // storing the data into the frame
+        int framePtr = frameNumber * 10;
         int k = 0;
-        for(int i=framePtr; i<(framePtr+10) && k<buffer.length; i++) {
-            for(int j=0; j<4 && k<buffer.length; j++) {
-                    memory[i][j] = buffer[k++];
+        for (int i = framePtr; i < (framePtr + 10) && k < buffer.length; i++) {
+            for (int j = 0; j < 4 && k < buffer.length; j++) {
+                memory[i][j] = buffer[k++];
             }
         }
         used_memory++;
@@ -353,32 +350,32 @@ class OperatingSystem {
     }
 
     private void EXECUTEUSERPROGRAM(char[][] memory) {
-        while(true){
+        while (true) {
             int RIC = addressMap(getIC());
             setIR(new char[] {
-                memory[RIC][0],
-                memory[RIC][1],
-                memory[RIC][2],
-                memory[RIC][3]
+                    memory[RIC][0],
+                    memory[RIC][1],
+                    memory[RIC][2],
+                    memory[RIC][3]
 
             });
 
-            setIC(getIC()+1); //incrementing the IC            
+            setIC(getIC() + 1); // incrementing the IC
 
-            //checking if the operand is number or not
-            if(getIR(0) != 'H' && (!Character.isDigit(getIR()[2]) || !Character.isDigit(getIR()[3]))){
+            // checking if the operand is number or not
+            if (getIR(0) != 'H' && (!Character.isDigit(getIR()[2]) || !Character.isDigit(getIR()[3]))) {
                 setPI(2);
                 MOS();
                 break;
             }
-            if(getIR(0) != 'H'){
+            if (getIR(0) != 'H') {
                 realAddress = addressMap(getOperand());
             }
 
-            //if realAdrees is -1 then there is pagefault
-            if(getPI() != 0 || (getTI() != 0 && getPI() != 0)){
+            // if realAdrees is -1 then there is pagefault
+            if (getPI() != 0 || (getTI() != 0 && getPI() != 0)) {
                 MOS();
-                if(!flag){
+                if (!flag) {
                     flag = true;
                     return;
                 }
@@ -387,7 +384,7 @@ class OperatingSystem {
             }
 
             // String opcode = getOpcode();
-            
+
             examine();
 
             if (isExceeded) {
@@ -398,106 +395,102 @@ class OperatingSystem {
                 reachedH = false;
                 return;
             }
-            if(getPI()!=0 || getTI()!=0){
+            if (getPI() != 0 || getTI() != 0) {
                 MOS();
                 return;
             }
 
-            if(!flag) {
+            if (!flag) {
                 flag = true;
                 return;
             }
 
             SIMULATION();
-           
-            
+
         }
-        
+
     }
 
     private void examine() {
         String opcode = getOpcode();
-            switch(opcode) {
-                case "LR": {
-                        
-                        setR(
-                            new char[] {
+        switch (opcode) {
+            case "LR": {
+
+                setR(
+                        new char[] {
                                 M[realAddress][0],
                                 M[realAddress][1],
                                 M[realAddress][2],
                                 M[realAddress][3]
-                            }
-                        );
-                }
+                        });
+            }
                 break;
-                case "SR": {
-                    char[] arr = getR();
-                    M[realAddress][0] = arr[0];
-                    M[realAddress][1] = arr[1];
-                    M[realAddress][2] = arr[2];
-                    M[realAddress][3] = arr[3];
-                }
+            case "SR": {
+                char[] arr = getR();
+                M[realAddress][0] = arr[0];
+                M[realAddress][1] = arr[1];
+                M[realAddress][2] = arr[2];
+                M[realAddress][3] = arr[3];
+            }
                 break;
-                case "CR": {
-                    if(getR()[0] == M[realAddress][0] &&
+            case "CR": {
+                if (getR()[0] == M[realAddress][0] &&
                         getR()[1] == M[realAddress][1] &&
-                        getR()[2] ==  M[realAddress][2] &&
-                        getR()[3] == M[realAddress][3]
-                    ) {
-                        setC(true);
-                    }else {
-                        setC(false);
-                    }
-                }
-                break;
-                case "BT": {
-                    if(getC())
-                    setIC(getOperand());
-
-                }
-                break;
-                case "GD": {
-                    setSI(1);
-                    MOS();
-
-                }
-                break;
-                case "PD": {
-                     
-                    setSI(2);
-                    MOS();
-                }
-                break;
-                case "H": {
-                     
-                    setSI(3);
-                    MOS();
-                    reachedH = true;
-                    return;
-                }
-                
-
-                default: {
-                    setPI(1);
-                    
+                        getR()[2] == M[realAddress][2] &&
+                        getR()[3] == M[realAddress][3]) {
+                    setC(true);
+                } else {
+                    setC(false);
                 }
             }
+                break;
+            case "BT": {
+                if (getC())
+                    setIC(getOperand());
+
+            }
+                break;
+            case "GD": {
+                setSI(1);
+                MOS();
+
+            }
+                break;
+            case "PD": {
+
+                setSI(2);
+                MOS();
+            }
+                break;
+            case "H": {
+
+                setSI(3);
+                MOS();
+                reachedH = true;
+                return;
+            }
+
+            default: {
+                setPI(1);
+
+            }
+        }
 
     }
 
     private void SIMULATION() {
         TTC++;
-        if(TTC == ttl){
+        if (TTC == ttl) {
             setTI(2);
         }
     }
 
     private int addressMap(int va) {
-        int pte = pageTableRegister+va/10;
+        int pte = pageTableRegister + va / 10;
 
-        //checking wheather the page table register is empty or not
-        if(M[pte][2] != '*') {
-            int realAddress = Integer.parseInt(String.valueOf(M[pte][2]) + String.valueOf(M[pte][3])) * 10 + va%10;
+        // checking wheather the page table register is empty or not
+        if (M[pte][2] != '*') {
+            int realAddress = Integer.parseInt(String.valueOf(M[pte][2]) + String.valueOf(M[pte][3])) * 10 + va % 10;
 
             return realAddress;
 
@@ -508,37 +501,31 @@ class OperatingSystem {
 
     }
 
-    
+    protected int allocate() {
 
-     protected int allocate(){
+        // generating a random value from 0-29
+        int value = (int) (Math.random() * 30);
 
-        
-        //generating a random value from 0-29
-        int value = (int)(Math.random() * 30);
-        
-
-        //check wheather it is generated if it is then again generate new value
-        while(true){
-            if(generated[value] == 0){
+        // check wheather it is generated if it is then again generate new value
+        while (true) {
+            if (generated[value] == 0) {
                 generated[value] = 1;
                 break;
-            }
-            else{
-                value = (int)(Math.random() * 30);
+            } else {
+                value = (int) (Math.random() * 30);
             }
         }
 
-        //returning the value and the arr
-        //creating a map entry
+        // returning the value and the arr
+        // creating a map entry
         return value;
     }
 
-
     private void WRITE() {
-        //incrementing the line counter
+        // incrementing the line counter
         LLC++;
-        //checking if the line counter is greater than the tll
-        if(LLC > tll){
+        // checking if the line counter is greater than the tll
+        if (LLC > tll) {
             isExceeded = true;
             setTI(2);
             TERMINATE(2);
@@ -547,22 +534,22 @@ class OperatingSystem {
 
         int oprand = getOperand();
 
-        //--converting the las bit to 0
-        if(oprand%10 != 0){
-            //convert that las bit to 0
-            oprand = oprand - (oprand%10);
-            
+        // --converting the las bit to 0
+        if (oprand % 10 != 0) {
+            // convert that las bit to 0
+            oprand = oprand - (oprand % 10);
+
         }
 
-        for(int i=realAddress; i<realAddress+10; i++){
-            for(int j=0; j<4; j++){
-                if(M[i][j] != '\0'){
+        for (int i = realAddress; i < realAddress + 10; i++) {
+            for (int j = 0; j < 4; j++) {
+                if (M[i][j] != '\0') {
                     try {
                         outputReader.write(M[i][j]);
                     } catch (Exception e) {
-                        // TODO: handle exception
+
                     }
-                    
+
                 }
             }
         }
@@ -576,17 +563,15 @@ class OperatingSystem {
         setSI(0);
     }
 
-    
-
     private void READ() {
         flag = true;
         String line = "";
         try {
-            line = inputReader.readLine(); 
-            if(line == null) {
+            line = inputReader.readLine();
+            if (line == null) {
                 // "Input file is empty"
-                
-            }else if(line.startsWith("$END")){
+
+            } else if (line.startsWith("$END")) {
                 // "Out of data"
                 flag = false;
                 TERMINATE(1);
@@ -595,22 +580,22 @@ class OperatingSystem {
             char[] buffer = line.toCharArray();
             int oprand = getOperand();
 
-            //--converting the las bit to 0
-            if(oprand%10 != 0){
-                //convert that las bit to 0
-                oprand = oprand - (oprand%10);
-                
-            }
-            //putting the whole buffer starting from the given operand address
-            for (int i = 0; i < line.length();) {
-                    M[realAddress][i % 4] = buffer[i];
-                    
-                    i++;
-                    if (i % 4 == 0) {
-                        realAddress++;
-                    }
+            // --converting the las bit to 0
+            if (oprand % 10 != 0) {
+                // convert that las bit to 0
+                oprand = oprand - (oprand % 10);
 
+            }
+            // putting the whole buffer starting from the given operand address
+            for (int i = 0; i < line.length();) {
+                M[realAddress][i % 4] = buffer[i];
+
+                i++;
+                if (i % 4 == 0) {
+                    realAddress++;
                 }
+
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -619,156 +604,175 @@ class OperatingSystem {
     }
 
     private void MOS() {
-        switch(""+getTI()+getSI()) {
+        switch ("" + getTI() + getSI()) {
             case "01": {
                 READ();
             }
-            break;
+                break;
 
             case "02": {
                 WRITE();
-                 
-            }break;
+
+            }
+                break;
 
             case "03": {
                 setSI(0);
                 TERMINATE(0);
             }
-            break;
+                break;
 
-            case "21":{
+            case "21": {
                 TERMINATE(1);
             }
-            break;
+                break;
 
-			case "22": {
-                isExceeded= true;
+            case "22": {
+                isExceeded = true;
                 WRITE();
-				TERMINATE(3);
-                
-            }
-			break;
+                TERMINATE(3);
 
-			case "23":{
+            }
+                break;
+
+            case "23": {
                 TERMINATE(0);
             }
-			break;
+                break;
 
             case "20": {
                 TERMINATE(3);
             }
-            
-        }
-        
-        switch ("" + getTI() + getPI()) {
-            case "01":{
-                
-                TERMINATE(4);
-                
-            }
-            break;
 
-            case "02":{
-                TERMINATE(5);
-               
+        }
+
+        switch ("" + getTI() + getPI()) {
+            case "01": {
+
+                TERMINATE(4);
+
             }
-            break;
+                break;
+
+            case "02": {
+                TERMINATE(5);
+
+            }
+                break;
 
             case "03": {
-                    
-                    if(getIR()[0] == 'G' || getIR()[0] == 'S') {
-                        valid = 1;
 
-                    }
-                    if(valid==1){
-                        valid =0;
-                        int al = allocate();
-                        int ir = getIR(2) - '0';
-                        M[pageTableRegister+ir][2] = (char)(al/10 + '0');
-                        M[pageTableRegister+ir][3] = (char)(al%10 + '0');
-                        setPI(0);
-                    }else{
-                        flag = false;
-                        TERMINATE(6);
-                        
-                    }
+                if (getIR()[0] == 'G' || getIR()[0] == 'S') {
+                    valid = 1;
+
+                }
+                if (valid == 1) {
+                    valid = 0;
+                    int al = allocate();
+                    int ir = getIR(2) - '0';
+                    M[pageTableRegister + ir][2] = (char) (al / 10 + '0');
+                    M[pageTableRegister + ir][3] = (char) (al % 10 + '0');
+                    setPI(0);
+                } else {
+                    flag = false;
+                    TERMINATE(6);
+
+                }
             }
-            break;
+                break;
 
             case "21":
-				TERMINATE(3+4);
-				break;
-				
-			case "22":
-				TERMINATE(3+5);
-				break;
-			
-			case "23":
-				TERMINATE(3);
-				return;
+                TERMINATE(7);
+                break;
+
+            case "22":
+                TERMINATE(8);
+                break;
+
+            case "23":
+                TERMINATE(3);
+                break;
+
+            case "default":
+                TERMINATE(3);
+                break;
         }
-        setSI(0);
-        setPI(0);
 
     }
 
-      private void TERMINATE(int code) {
-        
-          System.out.println("###################");
-          printMemory();
-          System.out.println("####################");
+    private void TERMINATE(int code) {
+
+        System.out.println("###################");
+        printMemory();
+        System.out.println("####################");
         try {
 
-                    String line = getErrorMessage(code);
-                    outputReader.write(String.format("JOB ID   :  %s\n",pcb.getJobID()));
-                    outputReader.write(line);
-                    outputReader.write("\n");
-                    outputReader.write("IC       :  "+getIC()+"\n");
-                    outputReader.write("IR       :  "+ String.valueOf(getIR())+"\n");
-                    outputReader.write("TTC      :  "+TTC+"\n");
-                    outputReader.write("LLC      :  "+LLC+"\n");
-                    outputReader.write("\n\n");
-                    setSI(0);
-                    setTI(0);
-                    setPI(0);                    
-
+            String line = getErrorMessage(code);
+            outputReader.write(String.format("JOB ID   :  %s\n", pcb.getJobID()));
+            outputReader.write(line);
+            outputReader.write("\n");
+            outputReader.write("IC       :  " + getIC() + "\n");
+            outputReader.write("IR       :  " + String.valueOf(getIR()) + "\n");
+            outputReader.write("TTL      :  " + ttl + "\n");
+            outputReader.write("TLL      :  " + tll + "\n");
+            outputReader.write("TTC      :  " + TTC + "\n");
+            outputReader.write("LLC      :  " + LLC + "\n");
+            outputReader.write("\n\n");
+            setSI(0);
+            setTI(0);
+            setPI(0);
+            // outputReader.close();
         } catch (IOException e) {
-                    e.printStackTrace();
+            e.printStackTrace();
         }
 
+    }
+
+    public void close() {
+        try {
+            outputReader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private String getErrorMessage(int code) {
-        switch(code) {
+        switch (code) {
             case 0: {
-                return " No error";
+                TTC++;
+                return " NO ERROR";
             }
             case 1: {
-                return " Out of Data";
+                return " OUT OF DATA";
             }
             case 2: {
-                return " Line Limit Exceeded";
+                TTC++;
+                LLC--;
+                return " LINE LIMIT EXCEEDED";
             }
             case 3: {
-                return " Time Limit Exceeded";
+                if (TI == 2 && PI == 1)
+                {
+                    return "TIME LIMIT EXCEEDED AND OPERATION CODE ERROR\n";
+                }
+                if (TI == 2 && PI == 2)
+                {
+                    return "TIME LIMIT EXCEEDED AND OPERAND ERROR\n";
+                }
+
+                return " TIME LIMIT EXCEEDED";
             }
             case 4: {
-                return " Operation Code Error";
+                return " OPERATION CODE ERROR";
             }
             case 5: {
-                return " Operand Error";
+                return " OPERAND ERROR";
             }
             case 6: {
-                return " Invalid Page Fault";
-            }
-            case 7: {
-                return " Time Limit Exceeded with Opcode Error";
-            }
-            case 8: {
-                return " Time Limit Exceeded with Operand Error";
+                return " INVALID PAGE FAULT";
             }
             default: {
-                return " Invalid Error";
+                return " INVALID ERROR";
             }
 
         }
@@ -777,12 +781,13 @@ class OperatingSystem {
 
 }
 
-
 public class Main {
+
     public static void main(String[] args) {
         OperatingSystem os = new OperatingSystem("input_phase2.txt", "output.txt");
         os.init();
         os.printMemory();
         os.LOAD();
+        os.close();
     }
 }
