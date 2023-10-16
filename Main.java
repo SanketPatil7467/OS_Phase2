@@ -712,7 +712,12 @@ class OperatingSystem {
             outputReader.write(line);
             outputReader.write("\n");
             outputReader.write("IC       :  " + getIC() + "\n");
-            outputReader.write("IR       :  " + String.valueOf(getIR()) + "\n");
+            if (String.valueOf(getIR()).charAt(0) == 'H') {
+                outputReader.write(String.format("IR       :  %c\n", String.valueOf(getIR()).charAt(0)));                
+            }
+            else{
+                outputReader.write("IR       :  " + String.valueOf(getIR()) + "\n");
+            }
             outputReader.write("TTL      :  " + ttl + "\n");
             outputReader.write("TLL      :  " + tll + "\n");
             outputReader.write("TTC      :  " + TTC + "\n");
@@ -785,6 +790,8 @@ public class Main {
 
     public static void main(String[] args) {
         OperatingSystem os = new OperatingSystem("input_phase2.txt", "output.txt");
+        // OperatingSystem os = new OperatingSystem("input.txt", "output.txt");
+
         os.init();
         os.printMemory();
         os.LOAD();
